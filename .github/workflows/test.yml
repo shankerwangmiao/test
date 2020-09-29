@@ -1,0 +1,37 @@
+name: test
+
+on:
+  push:
+
+jobs:
+  test:
+    
+    runs-on: ubuntu-latest
+    steps:
+      - run: | 
+          pwd
+          echo $GITHUB_WORKSPACE
+          ls -laR
+          ls -laR $GITHUB_WORKSPACE
+          mount
+          lsblk
+          df -h
+          free -h
+          cat /proc/cpuinfo
+          cat /proc/meminfo
+      - run: |
+          dd if=/dev/urandom bs=1M count=100 of=test
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Test1
+          path: test
+      - run: |
+          sudo mount -t tmpfs none /tmp
+          sudo mount -t tmpfs none "$GITHUB_WORKSPACE"
+          cd /
+          cd "$GITHUB_WORKSPACE"
+          dd if=/dev/urandom bs=1M count=100 of=test
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Test2
+          path: test
