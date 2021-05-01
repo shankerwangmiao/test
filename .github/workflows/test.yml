@@ -5,7 +5,6 @@ on:
 
 jobs:
   test:
-    
     runs-on: ubuntu-latest
     steps:
       - run: | 
@@ -35,3 +34,38 @@ jobs:
         with:
           name: Test2
           path: test
+  foo:
+    runs-on: ubuntu-18.04
+    needs:
+      test
+    outputs:
+      needPatch: ${{ steps.patchNeeded.outputs.needPatch }}
+    steps:
+    - id: patchNeeded
+      run: |
+        echo "::set-output name=needPatch::false"
+
+  bar:
+    runs-on: ubuntu-18.04
+    needs:
+      foo
+    if: needs.foo.outputs.needPatch == 'true'
+    steps:
+      - name: Test
+        run: |
+          echo Bar
+
+  barz:
+    runs-on: ubuntu-18.04
+    needs:
+    - test
+    - bar
+    if: always() && needs.test.result == 'success' && needs.bar.result != 'failure'
+    steps:
+      - name: Test
+        run: |
+          echo Barz
+      - name: Test if
+        run: |
+          echo Bar!!
+        if: needs.kpatch.result == 'success'
