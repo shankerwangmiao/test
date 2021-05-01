@@ -60,7 +60,7 @@ jobs:
     needs:
     - test
     - bar
-    if: always() && needs.test.result == 'success' && needs.bar.result != 'failure'
+    if: needs.test.result == 'success' && needs.bar.result != 'failure'
     steps:
       - name: Test
         run: |
